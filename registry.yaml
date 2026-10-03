@@ -1,6 +1,96 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/registry.json
 packages:
-  - name: scala/scala3
-    path: pkgs/scala/scala3/registry.yaml
-  - name: scala/scala2
-    path: pkgs/scala/scala2/registry.yaml
+  # ============================================================================
+  # Scala 3 (scala/scala3)
+  # ============================================================================
+  - type: github_release
+    repo_owner: scala
+    repo_name: scala3
+    description: The Scala 3 programming language compiler and toolchain (native binary, bundled JVM)
+    link: https://www.scala-lang.org/
+    asset: scala3-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz
+    format: tar.gz
+    files:
+      - name: scala
+        src: scala3-{{.Version}}-{{.Arch}}-{{.OS}}/bin/scala
+      - name: scalac
+        src: scala3-{{.Version}}-{{.Arch}}-{{.OS}}/bin/scalac
+      - name: scaladoc
+        src: scala3-{{.Version}}-{{.Arch}}-{{.OS}}/bin/scaladoc
+    replacements:
+      amd64: x86_64
+      arm64: aarch64
+      linux: pc-linux
+      darwin: apple-darwin
+    overrides:
+      - goos: windows
+        asset: scala3-{{.Version}}-{{.Arch}}-pc-win32.zip
+        format: zip
+        files:
+          - name: scala
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scala.bat
+          - name: scalac
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scalac.bat
+          - name: scaladoc
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scaladoc.bat
+    supported_envs:
+      - linux/amd64
+      - linux/arm64
+      - darwin/amd64
+      - darwin/arm64
+      - windows/amd64
+    version_constraint: semver(">= 3.5.0")
+    version_overrides:
+      # Scala 3.3.x LTS and older (before 3.5.0): only JVM-based archives (requires JDK)
+      - version_constraint: semver("< 3.5.0")
+        asset: scala3-{{.Version}}.zip
+        format: zip
+        files:
+          - name: scala
+            src: scala3-{{.Version}}/bin/scala
+          - name: scalac
+            src: scala3-{{.Version}}/bin/scalac
+          - name: scaladoc
+            src: scala3-{{.Version}}/bin/scaladoc
+        overrides:
+          - goos: windows
+            files:
+              - name: scala
+                src: scala3-{{.Version}}/bin/scala.bat
+              - name: scalac
+                src: scala3-{{.Version}}/bin/scalac.bat
+              - name: scaladoc
+                src: scala3-{{.Version}}/bin/scaladoc.bat
+        supported_envs:
+          - all
+
+  # ============================================================================
+  # Scala 2 (scala/scala)
+  # ============================================================================
+  - type: github_release
+    repo_owner: scala
+    repo_name: scala
+    aliases:
+      - name: scala/scala2
+    description: The Scala 2 programming language compiler and toolchain (JVM-based, requires JDK 8+)
+    link: https://www.scala-lang.org/
+    asset: scala-{{trimV .Version}}.zip
+    format: zip
+    files:
+      - name: scala
+        src: scala-{{trimV .Version}}/bin/scala
+      - name: scalac
+        src: scala-{{trimV .Version}}/bin/scalac
+      - name: scaladoc
+        src: scala-{{trimV .Version}}/bin/scaladoc
+    overrides:
+      - goos: windows
+        files:
+          - name: scala
+            src: scala-{{trimV .Version}}/bin/scala.bat
+          - name: scalac
+            src: scala-{{trimV .Version}}/bin/scalac.bat
+          - name: scaladoc
+            src: scala-{{trimV .Version}}/bin/scaladoc.bat
+    supported_envs:
+      - all
