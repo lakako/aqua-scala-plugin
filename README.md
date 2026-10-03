@@ -1,15 +1,16 @@
 # aqua-scala-plugin
 
-[aqua](https://aquaproj.github.io/) plugin for [Scala](https://www.scala-lang.org/), supporting both **Scala 2** and **Scala 3**.
+Unified [aqua](https://aquaproj.github.io/) plugin for [Scala](https://www.scala-lang.org/), seamlessly supporting both **Scala 2** and **Scala 3** as a single tool!
 
-Also fully compatible with [mise](https://mise.jdx.dev/)'s built-in aqua backend!
+Also fully compatible with [mise](https://mise.jdx.dev/)'s built-in aqua backend.
 
-## Packages
+## Unified Package: `scala/scala`
 
-| Package | Aliases | Source | Description |
-|---------|---------|--------|-------------|
-| `scala/scala3` | - | [scala/scala3](https://github.com/scala/scala3) | Scala 3 — native binary (>= 3.5.0) / JVM (< 3.5.0) |
-| `scala/scala` | `scala/scala2` | [scala/scala](https://github.com/scala/scala) | Scala 2 — JVM-based, platform independent |
+Both Scala 2 and Scala 3 are managed under **a single package name** (`scala/scala`):
+- Specifying a **3.x** version installs Scala 3 (native binary for >= 3.5.0; JVM for < 3.5.0)
+- Specifying a **2.x** version installs Scala 2 (JVM cross-platform archive)
+
+Aliases supported: `scala/scala3`, `scala/scala2`.
 
 ## Usage with aqua
 
@@ -29,11 +30,11 @@ registries:
 
 packages:
   # Install Scala 3
-  - name: scala/scala3@3.6.4
+  - name: scala/scala@3.6.4
     registry: scala
 
-  # Install Scala 2
-  # - name: scala/scala2@v2.13.16
+  # Or install Scala 2 (same tool, different version!)
+  # - name: scala/scala@2.13.16
   #   registry: scala
 ```
 
@@ -47,7 +48,7 @@ registries:
     path: registry.yaml
 
 packages:
-  - name: scala/scala3@3.6.4
+  - name: scala/scala@3.6.4
 ```
 
 Then run:
@@ -72,66 +73,34 @@ aqua.registries = [
 ]
 
 [tools]
-"aqua:scala/scala3" = "3.6.4"
-# Or Scala 2:
-# "aqua:scala/scala2" = "2.13.16"
+# Scala 3
+"aqua:scala/scala" = "3.6.4"
+
+# Or Scala 2 (just change the version number!)
+# "aqua:scala/scala" = "2.13.16"
 ```
 
 ### Commands
 
 ```bash
-# List available versions
-mise ls-remote aqua:scala/scala3
-mise ls-remote aqua:scala/scala2
+# Install Scala 3
+mise install aqua:scala/scala@3.6.4
+mise exec aqua:scala/scala@3.6.4 -- scala --version
 
-# Install
-mise install aqua:scala/scala3@3.6.4
-mise install aqua:scala/scala2@2.13.16
-
-# Run
-mise exec aqua:scala/scala3@3.6.4 -- scala --version
-mise exec aqua:scala/scala2@2.13.16 -- scala -version
+# Install Scala 2
+mise install aqua:scala/scala@2.13.16
+mise exec aqua:scala/scala@2.13.16 -- scala -version
 ```
 
-## Platform Support
+## How It Works
 
-### Scala 3 (`scala/scala3`)
+Under the hood, aqua's `version_constraint` and `version_overrides` mechanism dynamically switches the release source, archive format, and platform assets based on the requested version:
 
-Starting with Scala 3.5.0+, Scala 3 ships **native binaries** (bundled JVM, no external JDK needed):
-
-| Platform | Architecture | Download format |
-|----------|-------------|-----------------|
-| Linux | x86_64 (amd64) | `.tar.gz` |
-| Linux | aarch64 (arm64) | `.tar.gz` |
-| macOS | x86_64 (amd64) | `.tar.gz` |
-| macOS | aarch64 / Apple Silicon (arm64) | `.tar.gz` |
-| Windows | x86_64 (amd64) | `.zip` |
-
-For Scala 3.3.x LTS and older (< 3.5.0), cross-platform JVM zip archives are automatically selected (requiring a local JDK 8+).
-
-### Scala 2 (`scala/scala` / `scala/scala2`)
-
-Scala 2 distributions are JVM-based and **platform independent** — a single zip works on all platforms. Java (JDK 8+) must be installed separately.
-
-| Platform | Architecture | Download format |
-|----------|-------------|-----------------|
-| All | All | `.zip` |
-
-## Asset Naming Convention
-
-### Scala 3
-```
-scala3-{version}-{arch}-{platform}.tar.gz   # Linux / macOS (>= 3.5.0)
-scala3-{version}-{arch}-pc-win32.zip        # Windows (>= 3.5.0)
-scala3-{version}.zip                        # JVM fallback (< 3.5.0)
-```
-- `{arch}`: `x86_64` or `aarch64`
-- `{platform}`: `pc-linux`, `apple-darwin`, `pc-win32`
-
-### Scala 2
-```
-scala-{version}.zip
-```
+| Version | Distribution Source | Asset Format | JDK Requirement |
+|---------|---------------------|--------------|-----------------|
+| `>= 3.5.0` | GitHub Releases (`scala/scala3`) | Native binary (`.tar.gz` / `.zip`) | **None** (bundled JVM) |
+| `>= 3.0.0` & `< 3.5.0` (3.3 LTS) | GitHub Releases (`scala/scala3`) | Cross-platform `.zip` | JDK 8+ required |
+| `< 3.0.0` (Scala 2.13, 2.12, ...) | GitHub Releases (`scala/scala`) | Cross-platform `.zip` | JDK 8+ required |
 
 ## Reference
 

@@ -1,9 +1,12 @@
-# Example mise configuration using this aqua registry
+# Example mise configuration using the unified aqua Scala plugin
 [settings]
 aqua.registries = [
   "file:///D:/proj/aqua-scala-plugin/registry.yaml"
 ]
 
 [tools]
-"aqua:scala/scala3" = "3.6.4"
-# "aqua:scala/scala2" = "2.13.16"
+# Install Scala 3
+"aqua:scala/scala" = "3.6.4"
+
+# Or install Scala 2 (just change the version!):
+# "aqua:scala/scala" = "2.13.16"

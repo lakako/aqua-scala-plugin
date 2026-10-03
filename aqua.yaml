@@ -1,16 +1,16 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/aqua-yaml.json
-# Example aqua.yaml for local development / testing of this plugin
+# Example aqua.yaml using the unified Scala plugin
 registries:
   - name: local
     type: local
     path: registry.yaml
 
 packages:
-  # Scala 3 native binary (>= 3.5.0, bundled JVM, no external JDK required)
-  - name: scala/scala3@3.6.4
+  # Scala 3 (native binary, bundled JVM)
+  - name: scala/scala@3.6.4
 
-  # Scala 3 LTS (3.3.x, JVM-based, requires external JDK 8+)
-  # - name: scala/scala3@3.3.6
+  # Scala 3 LTS (JVM-based, requires external JDK 8+)
+  # - name: scala/scala@3.3.6
 
   # Scala 2 (JVM-based, requires external JDK 8+)
-  # - name: scala/scala2@v2.13.16
+  # - name: scala/scala@2.13.16

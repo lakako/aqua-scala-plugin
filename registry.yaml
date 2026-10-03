@@ -1,13 +1,18 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/registry.json
 packages:
   # ============================================================================
-  # Scala 3 (scala/scala3)
+  # Scala - Single unified plugin supporting both Scala 3 and Scala 2
   # ============================================================================
   - type: github_release
     repo_owner: scala
     repo_name: scala3
-    description: The Scala 3 programming language compiler and toolchain (native binary, bundled JVM)
+    name: scala/scala
+    aliases:
+      - name: scala/scala3
+      - name: scala/scala2
+    description: The Scala programming language compiler and toolchain (unified plugin for Scala 2 and Scala 3)
     link: https://www.scala-lang.org/
+    # Default: Scala 3 (>= 3.5.0) native binary (bundled JVM)
     asset: scala3-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz
     format: tar.gz
     files:
@@ -41,8 +46,8 @@ packages:
       - windows/amd64
     version_constraint: semver(">= 3.5.0")
     version_overrides:
-      # Scala 3.3.x LTS and older (before 3.5.0): only JVM-based archives (requires JDK)
-      - version_constraint: semver("< 3.5.0")
+      # Scala 3 (JVM-based, < 3.5.0 and >= 3.0.0, e.g. 3.3.x LTS)
+      - version_constraint: semver(">= 3.0.0") && semver("< 3.5.0")
         asset: scala3-{{.Version}}.zip
         format: zip
         files:
@@ -64,33 +69,26 @@ packages:
         supported_envs:
           - all
 
-  # ============================================================================
-  # Scala 2 (scala/scala)
-  # ============================================================================
-  - type: github_release
-    repo_owner: scala
-    repo_name: scala
-    aliases:
-      - name: scala/scala2
-    description: The Scala 2 programming language compiler and toolchain (JVM-based, requires JDK 8+)
-    link: https://www.scala-lang.org/
-    asset: scala-{{trimV .Version}}.zip
-    format: zip
-    files:
-      - name: scala
-        src: scala-{{trimV .Version}}/bin/scala
-      - name: scalac
-        src: scala-{{trimV .Version}}/bin/scalac
-      - name: scaladoc
-        src: scala-{{trimV .Version}}/bin/scaladoc
-    overrides:
-      - goos: windows
+      # Scala 2 (< 3.0.0, e.g. 2.13.x, 2.12.x) - JVM-based, cross-platform
+      - version_constraint: semver("< 3.0.0")
+        type: http
+        url: https://github.com/scala/scala/releases/download/v{{trimV .Version}}/scala-{{trimV .Version}}.zip
+        format: zip
         files:
           - name: scala
-            src: scala-{{trimV .Version}}/bin/scala.bat
+            src: scala-{{trimV .Version}}/bin/scala
           - name: scalac
-            src: scala-{{trimV .Version}}/bin/scalac.bat
+            src: scala-{{trimV .Version}}/bin/scalac
           - name: scaladoc
-            src: scala-{{trimV .Version}}/bin/scaladoc.bat
-    supported_envs:
-      - all
+            src: scala-{{trimV .Version}}/bin/scaladoc
+        overrides:
+          - goos: windows
+            files:
+              - name: scala
+                src: scala-{{trimV .Version}}/bin/scala.bat
+              - name: scalac
+                src: scala-{{trimV .Version}}/bin/scalac.bat
+              - name: scaladoc
+                src: scala-{{trimV .Version}}/bin/scaladoc.bat
+        supported_envs:
+          - all

@@ -1,37 +1,93 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/registry.json
-# Scala 2 (scala/scala)
-#
-# Scala 2 is JVM-based and platform-independent: a single .zip works on all platforms.
-# A separately installed JDK (8+) is required.
-#
-# GitHub Release tags use a "v" prefix (e.g. v2.13.16), but the asset filename does not:
-#   scala-2.13.16.zip
-#
-# Archive layout:
-#   scala-{version}/
-#     bin/
-#       scala      (or scala.bat on Windows)
-#       scalac     (or scalac.bat on Windows)
-#       ...
 packages:
+  # ============================================================================
+  # Scala - Single unified plugin supporting both Scala 3 and Scala 2
+  # ============================================================================
   - type: github_release
     repo_owner: scala
-    repo_name: scala
-    description: The Scala 2 programming language compiler and toolchain (JVM-based, requires JDK 8+)
+    repo_name: scala3
+    name: scala/scala
+    aliases:
+      - name: scala/scala3
+      - name: scala/scala2
+    description: The Scala programming language compiler and toolchain (unified plugin for Scala 2 and Scala 3)
     link: https://www.scala-lang.org/
-    asset: scala-{{trimV .Version}}.zip
-    format: zip
+    asset: scala3-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz
+    format: tar.gz
     files:
       - name: scala
-        src: scala-{{trimV .Version}}/bin/scala
+        src: scala3-{{.Version}}-{{.Arch}}-{{.OS}}/bin/scala
       - name: scalac
-        src: scala-{{trimV .Version}}/bin/scalac
+        src: scala3-{{.Version}}/bin/scalac
+      - name: scaladoc
+        src: scala3-{{.Version}}-{{.Arch}}-{{.OS}}/bin/scaladoc
+    replacements:
+      amd64: x86_64
+      arm64: aarch64
+      linux: pc-linux
+      darwin: apple-darwin
     overrides:
       - goos: windows
+        asset: scala3-{{.Version}}-{{.Arch}}-pc-win32.zip
+        format: zip
         files:
           - name: scala
-            src: scala-{{trimV .Version}}/bin/scala.bat
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scala.bat
           - name: scalac
-            src: scala-{{trimV .Version}}/bin/scalac.bat
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scalac.bat
+          - name: scaladoc
+            src: scala3-{{.Version}}-{{.Arch}}-pc-win32/bin/scaladoc.bat
     supported_envs:
-      - all
+      - linux/amd64
+      - linux/arm64
+      - darwin/amd64
+      - darwin/arm64
+      - windows/amd64
+    version_constraint: semver(">= 3.5.0")
+    version_overrides:
+      # Scala 3 (JVM-based, < 3.5.0 and >= 3.0.0, e.g. 3.3.x LTS)
+      - version_constraint: semver(">= 3.0.0") && semver("< 3.5.0")
+        asset: scala3-{{.Version}}.zip
+        format: zip
+        files:
+          - name: scala
+            src: scala3-{{.Version}}/bin/scala
+          - name: scalac
+            src: scala3-{{.Version}}/bin/scalac
+          - name: scaladoc
+            src: scala3-{{.Version}}/bin/scaladoc
+        overrides:
+          - goos: windows
+            files:
+              - name: scala
+                src: scala3-{{.Version}}/bin/scala.bat
+              - name: scalac
+                src: scala3-{{.Version}}/bin/scalac.bat
+              - name: scaladoc
+                src: scala3-{{.Version}}/bin/scaladoc
+        supported_envs:
+          - all
+
+      # Scala 2 (< 3.0.0, e.g. 2.13.x, 2.12.x) - JVM-based, cross-platform
+      - version_constraint: semver("< 3.0.0")
+        type: http
+        url: https://github.com/scala/scala/releases/download/v{{trimV .Version}}/scala-{{trimV .Version}}.zip
+        format: zip
+        files:
+          - name: scala
+            src: scala-{{trimV .Version}}/bin/scala
+          - name: scalac
+            src: scala-{{trimV .Version}}/bin/scalac
+          - name: scaladoc
+            src: scala-{{trimV .Version}}/bin/scaladoc
+        overrides:
+          - goos: windows
+            files:
+              - name: scala
+                src: scala-{{trimV .Version}}/bin/scala.bat
+              - name: scalac
+                src: scala-{{trimV .Version}}/bin/scalac.bat
+              - name: scaladoc
+                src: scala-{{trimV .Version}}/bin/scaladoc.bat
+        supported_envs:
+          - all
