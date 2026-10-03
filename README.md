@@ -23,7 +23,7 @@ Add this registry to your `aqua.yaml`:
 registries:
   - name: scala
     type: github_content
-    repo_owner: <your-org>
+    repo_owner: lakako
     repo_name: aqua-scala-plugin
     ref: main
     path: registry.yaml
@@ -66,10 +66,10 @@ aqua install
 ```toml
 [settings]
 aqua.registries = [
-  # Local registry file
-  "file:///path/to/aqua-scala-plugin/registry.yaml"
-  # Or remote repository:
-  # "https://github.com/<your-org>/aqua-scala-plugin"
+  # Remote GitHub repository
+  "https://github.com/lakako/aqua-scala-plugin"
+  # Or local file:
+  # "file:///path/to/aqua-scala-plugin/registry.yaml"
 ]
 
 [tools]
