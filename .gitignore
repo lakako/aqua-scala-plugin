@@ -1,0 +1,5 @@
+# aqua / mise local artifacts
+.aqua/
+aqua-checksums.json
+.mise.toml
+mise.local.toml
